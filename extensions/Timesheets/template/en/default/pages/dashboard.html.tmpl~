@@ -1,0 +1,7 @@
+[% USE Bugzilla %]
+
+[% PROCESS global/header.html.tmpl
+    title = "Timesheets"
+    style_urls = []
+    javascript_urls = []
+%]

@@ -1,0 +1,11 @@
+.row-total
+{
+    background-color: grey;
+}
+
+.row-username
+{
+    background-color: black;
+    color: white;
+    font-weight: bolder;
+}

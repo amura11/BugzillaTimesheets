@@ -1,0 +1,136 @@
+[% USE Bugzilla %]
+
+[% PROCESS global/header.html.tmpl
+    title = "Timesheets"
+    style_urls = [
+"js/yui/assets/skins/sam/autocomplete.css",
+"js/yui/assets/skins/sam/calendar.css",
+"skins/standard/summarize-time.css",
+"extensions/Timesheets/web/style.css"
+]
+    javascript_urls = [
+"js/yui/yahoo-dom-event/yahoo-dom-event.js",
+"js/yui/cookie/cookie-min.js",
+"js/yui/datasource/datasource-min.js",
+"js/yui/connection/connection-min.js",
+"js/yui/json/json-min.js",
+"js/yui/autocomplete/autocomplete-min.js",
+"js/yui/calendar/calendar-min.js",
+"js/yui/element/element-min.js",
+"js/yui/datatable/datatable-min.js",
+"js/yui/button/button-min.js",
+"js/global.js",
+"js/util.js",
+"js/field.js"]
+
+%]
+<hr noshade="" size="1">
+<form method="post" name="timesheets" style="display: inline;">
+  <input type="hidden" name="runReport" value="1">
+  <table>
+    <tr>
+      <td align="right">
+	<b><label for="selected_users">Users</label></b>: 
+      </td>
+      <td colspan="3">
+	[% INCLUDE global/userselect.html.tmpl
+	id => "users"
+	name => "users"
+	value => validUsernames
+	classes => ["bz_userfield"]
+	multiple => 1
+	size => 50
+	%]
+      </td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td><td colspan="4">
+	<small>Users to pull timesheet for (empty will pull for all)</small>
+      </td>
+    </tr>
+    <tr>
+      <td align="right">
+	<b><label for="startDate">Period starting</label></b> 
+      </td>
+      <td colspan="3">
+	<input type="text" id="startDate" name="startDate" size="11" align="right" value="[% startDate FILTER html %]" maxlength="10" onchange="updateCalendarFromField(this)">
+        <button type="button" class="calendar_button" id="button_calendar_startDate" onclick="showCalendar('startDate')">
+	  <span>Calendar</span>
+	</button>
+	<div id="con_calendar_startDate"></div>
+	&nbsp;
+	<b>and <label for="endDate"> ending</label></b>
+	<input type="text" name="endDate" size="11" id="endDate" align="right" value ="[% endDate FILTER html %]" maxlength="10" onchange="updateCalendarFromField(this)">
+	<button type="button" class="calendar_button" id="button_calendar_endDate" onclick="showCalendar('endDate')">
+	  <span>Calendar</span>
+	</button>
+	<div id="con_calendar_endDate"></div>
+      </td>
+    </tr>
+    <tr>
+      <td><input type="submit" id="summarize" value="Summarize"></td>
+    </tr>
+  </table>
+</form>
+
+[% IF(debug) %]
+<table>
+  <tr>
+    <td>Time Sum Query</td>
+    <td>[% debug_timeSumQuery  %]</td>
+  </tr>
+  <tr>
+    <td>User Bugs Query</td> 
+    <td>[% debug_bugsQuery  %]</td>
+  </tr>
+  <tr>
+    <td>Invalid User Names</td> 
+    <td>[% invalidUsernames %]</td>
+  </tr>
+</table>
+[% END %]
+<hr noshade="" size="1">
+
+[% IF(runReport) %]
+[% FOREACH key IN  reports.keys %]
+<table>
+    <tr class="row-username">
+      <td colspan="5">
+	[% reports.$key.username %]
+      </td>
+    </tr>
+    <tr>
+      <th>Date</th>
+      <th>Bug ID</th>
+      <th>Bug Name</th>
+      <th>Comment</th>
+      <th>Hours</th>
+    </tr>
+    [% FOREACH row = reports.$key.rows %]
+    <tr>
+      [% FOREACH item = row %]
+      <td>
+	[% item %]
+      </td>
+      [% END %]
+    </tr>
+    [% END %]
+    <tr class="row-total">
+      <td colspan="3" align="right">Total:</td>
+      <td colspan="2" aling="center">[% reports.$key.sum %]</td>
+    </tr>
+</table>
+[% END %]
+
+[% END %]
+
+[% test %]
+
+<script type="text/javascript">
+  <!--
+      [%+ PROCESS "global/calendar.js.tmpl" id = 'startDate' %]
+      [% PROCESS "global/calendar.js.tmpl" id = 'endDate' %]
+      //-->
+</script>
+
+[% PROCESS global/footer.html.tmpl %]
